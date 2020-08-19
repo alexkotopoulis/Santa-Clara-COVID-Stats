@@ -1,6 +1,11 @@
+var observedZipcodes = [{zip:"95124",pop:51170} , 
+                        {zip:"95032", pop:26281}, 
+                        {zip:"95030", pop:13288},
+                        {zip:"95008", pop:46513},
+                        {zip:"95118", pop:32560}];
+var url = 'https://data.sccgov.org/resource/j2gj-bg6c.json';
+
 function saveDailySantaClaraCovidStats() {
-  var url = 'https://data.sccgov.org/resource/j2gj-bg6c.json';
-  var observedZipcodes = ["95124", "95032", "95030", "95008", "95118"];
   let zipcodesMap = new Map();
   
   var dateToday =  Utilities.formatDate(new Date(), 'America/Los_Angeles', "MM/dd/yyyy") 
@@ -30,6 +35,7 @@ function saveDailySantaClaraCovidStats() {
   var data = dataAll;
   sheet.insertRowsAfter(1, data.length);
   var i=0;
+  var zipList = getZips();
   for (row in data){
     sheet.getRange(i+2, 1).setValue(dateToday);
     sheet.getRange(i+2, 2).setValue(data[i].zipcode);
@@ -37,7 +43,7 @@ function saveDailySantaClaraCovidStats() {
     sheet.getRange(i+2, 4).setValue(data[i].population);
     sheet.getRange(i+2, 5).setValue(data[i].rate);
     
-    if (observedZipcodes.includes(data[i].zipcode)) {
+    if (zipList.includes(data[i].zipcode)) {
       zipcodesMap[data[i].zipcode] = data[i].cases;
     }
     i++;   
@@ -61,11 +67,9 @@ function saveDailySantaClaraCovidStats() {
 //sheetCovid.getRange(1, 6, 13, 1).setValues(valuesToCopy);
   
   sheetCovid.getRange(4, 6).setValue(dateToday);
-  sheetCovid.getRange(5, 6).setValue(zipcodesMap["95124"]);
-  sheetCovid.getRange(6, 6).setValue(zipcodesMap["95032"]); 
-  sheetCovid.getRange(7, 6).setValue(zipcodesMap["95030"]);  
-  sheetCovid.getRange(8, 6).setValue(zipcodesMap["95008"]);  
-  sheetCovid.getRange(9, 6).setValue(zipcodesMap["95118"]);   
+  for (i=0;i<zipList.length;i++){  
+    sheetCovid.getRange(5+i, 6).setValue(zipcodesMap[zipList[i]]);
+  }
 }
 
 /**
@@ -83,3 +87,12 @@ function getIdFromName(spreadsheetName) {
   
   return null;
 }
+
+function getZips() {
+  var zips=[];
+  for (i=0;i<observedZipcodes.length;i++){
+    zips.push(observedZipcodes[i].zip);
+  }
+  return zips;
+}
+
