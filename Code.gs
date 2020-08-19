@@ -43,8 +43,14 @@ function saveDailySantaClaraCovidStats() {
     i++;   
   }
   
-  var covidId = getIdFromName("COVID ZIP");
-  docCovid = SpreadsheetApp.openById(covidId);
+  var covidName = "COVID ZIP";
+  var covidId = getIdFromName(covidName);
+  if (null != covidId) {
+     docCovid = SpreadsheetApp.openById(covidId);
+  } else {
+     docCovid = buildSheet(covidName);
+  }
+  
   var sheetCovid = docCovid.getActiveSheet();
   sheetCovid.insertColumnAfter(5);
   
@@ -62,7 +68,10 @@ function saveDailySantaClaraCovidStats() {
   sheetCovid.getRange(9, 6).setValue(zipcodesMap["95118"]);   
 }
 
-
+/**
+* Get ID for spreadsheet from spreadsheet name. 
+* Will return the first spreadsheet that matches the name or null if none matches.
+*/
 function getIdFromName(spreadsheetName) {
    var spreadsheetId = null;
   
