@@ -35,10 +35,6 @@ function buildSheet(spreadsheetName) {
   var row = 8+zipCount;
   sheet.getRange(row,4).setFormula("=index(A"+row+":AT"+row+",1,6)*1000000/C"+row);
   
-  sheet.getRange(5+zipCount,6).setFormula("=F13-G13");
-  sheet.getRange(6+zipCount,6).setFormula("=AVERAGE(F10:J10)");
-  sheet.getRange(7+zipCount,6).setFormula("=F10*1000000/$C13");
-  sheet.getRange(8+zipCount,6).setFormula("=sum(F5:F9)");
 
   sheet.getRange("R4C2:R"+row+"C6").setBorder(true, true, true, true, true, true, "black",null);
   sheet.getRange("R4C2:R4C6").setBackground("#aaaaaa"); 
@@ -51,4 +47,23 @@ function buildSheet(spreadsheetName) {
   
   return doc;
 
+}
+
+
+function addFirstRow(sheet, zipCount) {
+  Logger.log("addFirstRow");
+  sheet.getRange(5+zipCount,6).setValue(0);
+  sheet.getRange(8+zipCount,6).setNumberFormat("#,###").setFormula("=sum(F5:F"+(4+zipCount)+")");
+  
+  sheet.getRange("R4C6:R"+(8+zipCount)+"C6").setBorder(true, true, true, true, true, true, "black",null);
+  sheet.getRange("R4C6").setBackground("#aaaaaa"); 
+}
+
+function addNewRow(sheet, zipCount) {
+  Logger.log("addNewRow");
+  addFirstRow(sheet, zipCount);
+  
+  sheet.getRange(5+zipCount,6).setNumberFormat("#,###").setFormula("=F"+(8+zipCount)+"-G"+(8+zipCount));
+  sheet.getRange(6+zipCount,6).setNumberFormat("#,###").setFormula("=AVERAGE(F"+(5+zipCount)+":J"+(5+zipCount)+")");
+  sheet.getRange(7+zipCount,6).setNumberFormat("#,###").setFormula("=F"+(5+zipCount)+"*1000000/$C"+(8+zipCount));
 }

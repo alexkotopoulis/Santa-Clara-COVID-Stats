@@ -1,23 +1,23 @@
-var observedZipcodes = [{zip:"95124",pop:51170} , 
-                        {zip:"95032", pop:26281}, 
-                        {zip:"95030", pop:13288},
-                        {zip:"95008", pop:46513},
-                        {zip:"95118", pop:32560}];
-var url = 'https://data.sccgov.org/resource/j2gj-bg6c.json';
-
-function saveDailySantaClaraCovidStats() {
+/**
+ * Pull current stats from Santa Clara County Health site and store it into a Google Sheet: 
+ * COVID ZIP: List of new case statistics per selected ZIP
+ */
+function saveCovidStats() {
   let zipcodesMap = new Map();
   
   var dateToday =  Utilities.formatDate(new Date(), 'America/Los_Angeles', "MM/dd/yyyy") 
 
   var response = UrlFetchApp.fetch(url, {'muteHttpExceptions': true});
   Logger.log(response);
-  var dataAll = JSON.parse(response.getContentText()); //
+  var dataAll = JSON.parse(response.getContentText());
+  var zipList = getZips();
+  var zipCount = zipList.length;
   
+  /*
   var spreadsheetName = "COVID ZIP History";
   var spreadsheetId = getIdFromName(spreadsheetName);
-  
   var doc = null;
+
   
   if (null != spreadsheetId) {
     doc = SpreadsheetApp.openById(spreadsheetId)
@@ -35,7 +35,7 @@ function saveDailySantaClaraCovidStats() {
   var data = dataAll;
   sheet.insertRowsAfter(1, data.length);
   var i=0;
-  var zipList = getZips();
+
   for (row in data){
     sheet.getRange(i+2, 1).setValue(dateToday);
     sheet.getRange(i+2, 2).setValue(data[i].zipcode);
@@ -48,23 +48,30 @@ function saveDailySantaClaraCovidStats() {
     }
     i++;   
   }
+  */
   
+  var newSheet = false;
   var covidName = "COVID ZIP";
   var covidId = getIdFromName(covidName);
   if (null != covidId) {
-     docCovid = SpreadsheetApp.openById(covidId);
+    docCovid = SpreadsheetApp.openById(covidId);
   } else {
-     docCovid = buildSheet(covidName);
+    docCovid = buildSheet(covidName);
+    newSheet = true;
   }
   
   var sheetCovid = docCovid.getActiveSheet();
-  sheetCovid.insertColumnAfter(5);
   
-  // Copy from 7th column, all rows for one column and paste to 6th column
+  if (newSheet) {
+    addFirstRow(sheetCovid, zipCount);
+  } else {
+     sheetCovid.insertColumnAfter(5);
+     addNewRow(sheetCovid, zipCount);
+  }
   
-  var range = sheetCovid.getRange(1, 7, 13, 1);
-  range.copyTo(sheetCovid.getRange(1, 6, 13, 1), {contentsOnly:false});
-//sheetCovid.getRange(1, 6, 13, 1).setValues(valuesToCopy);
+  // Copy from 7th column, all rows for one column and paste to 6th colum  
+  // var range = sheetCovid.getRange(1, 7, 13, 1);
+  // range.copyTo(sheetCovid.getRange(1, 6, 13, 1), {contentsOnly:false});
   
   sheetCovid.getRange(4, 6).setValue(dateToday);
   for (i=0;i<zipList.length;i++){  
