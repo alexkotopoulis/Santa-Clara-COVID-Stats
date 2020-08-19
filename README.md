@@ -1,8 +1,7 @@
 # Santa-Clara-COVID-Stats
 Google Apps Script for daily collection of local COVID-19 Stats in Santa Clara County
 
-This collection of scripts is meant to pull current stats for a list of ZIP codes from Santa Clara County Health site and store it into a Google Sheet
-called "COVID ZIP" in your local Google docs. 
+This collection of scripts is meant to pull current stats for a list of ZIP codes from [Santa Clara County Health Dept REST service](https://data.sccgov.org/browse?category=COVID-19) and store it into a Google Sheet called "COVID ZIP" in your local Google docs. 
 
 Installation steps:
 1. Create Google Apps Script project at https://script.google.com/.
